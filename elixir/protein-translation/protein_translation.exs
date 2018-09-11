@@ -27,6 +27,17 @@ defmodule ProteinTranslation do
   UAG -> STOP
   UGA -> STOP
   """
+  @proteins [
+    {:Cysteine, ["UGU", "UGC"]},
+    {:Leucine, ["UUA", "UUG"]},
+    {:Methionine, ["AUG"]},
+    {:Phenylalanine, ["UUU", "UUC"]},
+    {:Serine, ["UCU", "UCC", "UCA", "UCG"]},
+    {:Tryptophan, ["UGG"]},
+    {:Tyrosine, ["UAU", "UAC"]},
+    {:STOP, ["UAA", "UAG", "UGA"]}
+  ]
+  
   @spec of_codon(String.t()) :: {atom, String.t()}
   def of_codon(codon) do
   end

@@ -17,21 +17,24 @@ defmodule PigLatin do
     # We can run a cond statement in order of exclusivity to eliminate the most
     # specific cases. That way we don't have to identify consonants themselves,
     # just the vowels.
-
-    # 1 - least frequent: 'x' or 'y' followed by a consonant
-    # 2: word starting with 'qu'
-    # 3: word starting with a vowel (aeiou)
-    # 4: all other words must start with a standard consonant
-    #   4.a: if 'qu' is encountered following consonants, it is treated as a
-    #        consonant and moved to the back of the word, but the search ends
+    cond do
+      Regex.match?(~r/^(x|y)[^aeiou]/, word) ->
+        word <> "ay "
+      Regex.match?(~r/^([aeiou]+)/, word) ->
+        word <> "ay "
+      parts = Regex.named_captures(~r/^(?<prefix>[^aeiou]*(qu))(?<body>.*)/, word) ->
+        parts["body"] <> parts["prefix"] <> "ay "
+      parts = Regex.named_captures(~r/^(?<prefix>[^aeiou]*)(?<body>.*)/, word) ->
+        parts["body"] <> parts["prefix"] <> "ay "
+    end
   end
 
   @spec translate(phrase :: String.t()) :: String.t()
   def translate(phrase) do
-    phrase =
-      phrase
-        |> String.split(~r{\W}, trim: true)
-        |> Enum.map(&(anslatetray(&1)))
-        |> List.to_string()
+    phrase
+      |> String.split(~r/\W/, trim: true)
+      |> Enum.map(&(anslatetray(&1)))
+      |> List.to_string()
+      |> String.trim()
   end
 end

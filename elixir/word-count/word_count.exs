@@ -4,21 +4,15 @@ defmodule Words do
 
   Words are compared case-insensitively.
   """
-  def tally(contents, word) do
-    contents
-      |> Enum.filter(&(&1 == word))
-      |> Enum.count()
-  end
-
   @spec count(String.t()) :: map
   def count(sentence) do
-    sentence = Regex.replace(~r/_/, sentence, " ")
-
-    contents = Regex.scan(~r/(\w|\d|-)+/u, sentence, capture: :first)
+    sentence
+      |> String.replace(~r/_/u, " ")
+      |> String.split(~r/[^\w\d-]+/u, trim: true)
       |> List.flatten()
       |> Enum.map(&(String.downcase(&1)))
-
-    Enum.uniq(contents)
-      |> Map.new( &{&1, tally(contents, &1)} )
+      |> Enum.reduce(
+        Map.new(), fn(word, counts) -> Map.update(counts, word, 1, &(&1 + 1)) end
+      )
   end
 end
